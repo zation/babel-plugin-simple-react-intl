@@ -2,8 +2,9 @@ import p from 'path';
 import { writeFileSync } from 'fs';
 import { sync as mkdirpSync } from 'mkdirp';
 
-const FUNCTION_NAMES = [
+const FUNCTION_NAME = [
   'defineMessages',
+  'default',
 ];
 
 const convertToObject = objectExpression => objectExpression.node.properties.reduce(
@@ -18,8 +19,10 @@ export default () => ({
       const moduleSourceName = opts.moduleSourceName || 'react-intl';
       const callee = path.get('callee');
 
-      if (callee.isIdentifier() &&
-        FUNCTION_NAMES.some(name => callee.referencesImport(moduleSourceName, name))) {
+      if (
+        callee.isIdentifier() &&
+        FUNCTION_NAME.some(name => callee.referencesImport(moduleSourceName, name))
+      ) {
 
         const { file: { opts: { basename, filename } } } = state;
         const relativePath = p.relative(process.cwd(), filename);
