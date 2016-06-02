@@ -2,6 +2,7 @@ import { transformFileSync } from 'babel-core';
 import simpleReactIntl from '../src/index';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
+import rimraf from 'rimraf';
 
 const options = {
   presets: [
@@ -14,28 +15,21 @@ const options = {
 };
 
 describe('Simple react-intil', () => {
+  beforeEach(done => rimraf('test/build/', done));
+
   it('should generate new structure and save to file', () => {
     const { code } = transformFileSync('fixture.js', options);
-    const { checkbox, select, button } = eval(code.match(/\(\{((.|\n)*)\}\)/)[0]);
-    const [
-      checkboxOutput,
-      selectOutput,
-      buttonOutput,
-    ] = JSON.parse(readFileSync('test/build/fixture.json', 'utf8'))
+    const transformedObject = eval(code.match(/\(\{((.|\n)*)\}\)/)[0]);
+    const output = JSON.parse(readFileSync('test/build/fixture.json', 'utf8'));
 
-    expect(checkbox.id).to.equal(checkboxOutput.id);
-    expect(checkbox.defaultMessage).to.equal(checkboxOutput.defaultMessage);
-    expect(checkboxOutput.key).to.equal('checkbox');
-    expect(checkboxOutput.file).to.equal('fixture.js');
-
-    expect(select.id).to.equal(selectOutput.id);
-    expect(select.defaultMessage).to.equal(selectOutput.defaultMessage);
-    expect(selectOutput.key).to.equal('select');
-    expect(selectOutput.file).to.equal('fixture.js');
-
-    expect(button.id).to.equal(buttonOutput.id);
-    expect(button.defaultMessage).to.equal(buttonOutput.defaultMessage);
-    expect(buttonOutput.key).to.equal('button');
-    expect(buttonOutput.file).to.equal('fixture.js');
+    expect(output).to.have.length(3);
+    output.forEach(
+      ({ id, defaultMessage, key, file }) => {
+        const transformedItem = transformedObject[key];
+        expect(id).to.equal(transformedItem.id);
+        expect(defaultMessage).to.equal(transformedItem.defaultMessage);
+        expect(file).to.equal('fixture.js');
+      }
+    );
   });
 });

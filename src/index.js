@@ -1,7 +1,7 @@
 import p from 'path';
 import { writeFileSync } from 'fs';
 import { sync as mkdirpSync } from 'mkdirp';
-import getGUID from './guid';
+import { compress } from 'lz-string';
 
 const FUNCTION_NAME = [
   'defineMessages',
@@ -36,9 +36,9 @@ export default ({ types: t }) => ({
 
         const messagesObject = convertToObject(path.get('arguments')[0]);
         const messages = Object.keys(messagesObject).map(key => ({
-          id: getGUID(),
+          id: compress(`${relativePath}-${key}`),
           defaultMessage: messagesObject[key],
-          file: filename,
+          file: relativePath,
           key,
         }));
 
