@@ -12,7 +12,7 @@ const convertToObject = objectExpression => objectExpression.node.properties.red
   {}
 );
 
-export default () => ({
+export default ({ types: t }) => ({
   visitor: {
     CallExpression: (path, state) => {
       const { opts } = state;
@@ -23,7 +23,6 @@ export default () => ({
         callee.isIdentifier() &&
         FUNCTION_NAME.some(name => callee.referencesImport(moduleSourceName, name))
       ) {
-
         const { file: { opts: { basename, filename } } } = state;
         const relativePath = p.relative(process.cwd(), filename);
         const dir = p.join(opts.messagesDir, p.dirname(relativePath));
@@ -42,6 +41,15 @@ export default () => ({
 
         mkdirpSync(dir);
         writeFileSync(filePath, JSON.stringify(messages, null, 2));
+
+        path.get('arguments')[0].get('properties').forEach(property => {
+          property.node.value = t.objectExpression([
+            t.objectProperty(
+              t.identifier('id'),
+              t.stringLiteral(`${relativePath}-${property.node.key.name}`)),
+            t.objectProperty(t.identifier('defaultMessage'), property.node.value),
+          ]);
+        });
       }
     },
   },
