@@ -1,6 +1,7 @@
 import p from 'path';
 import { writeFileSync } from 'fs';
 import { sync as mkdirpSync } from 'mkdirp';
+import getGUID from './guid';
 
 const FUNCTION_NAME = [
   'defineMessages',
@@ -35,19 +36,23 @@ export default ({ types: t }) => ({
 
         const messagesObject = convertToObject(path.get('arguments')[0]);
         const messages = Object.keys(messagesObject).map(key => ({
-          id: `${relativePath}-${key}`,
+          id: getGUID(),
           defaultMessage: messagesObject[key],
         }));
 
         mkdirpSync(dir);
         writeFileSync(filePath, JSON.stringify(messages, null, 2));
 
-        path.get('arguments')[0].get('properties').forEach(property => {
+        path.get('arguments')[0].get('properties').forEach((property, index) => {
           property.node.value = t.objectExpression([
             t.objectProperty(
               t.identifier('id'),
-              t.stringLiteral(`${relativePath}-${property.node.key.name}`)),
-            t.objectProperty(t.identifier('defaultMessage'), property.node.value),
+              t.stringLiteral(messages[index].id)
+            ),
+            t.objectProperty(
+              t.identifier('defaultMessage'),
+              t.stringLiteral(messages[index].defaultMessage)
+            ),
           ]);
         });
       }

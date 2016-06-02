@@ -13,30 +13,19 @@ const options = {
   ],
 };
 
-const defaultMessages = ['情景模拟', '请选择情景', '开始模拟'];
-
 describe('Simple react-intil', () => {
-  it('should generate new structure', () => {
+  it('should generate new structure and save to file', () => {
     const { code } = transformFileSync('fixture.js', options);
     const { checkbox, select, button } = eval(code.match(/\(\{((.|\n)*)\}\)/)[0]);
+    const output = JSON.parse(readFileSync('test/build/fixture.json', 'utf8'))
 
-    expect(checkbox.id).to.be.a('string');
-    expect(checkbox.defaultMessage).to.equal('情景模拟');
+    expect(checkbox.id).to.equal(output[0].id);
+    expect(checkbox.defaultMessage).to.equal(output[0].defaultMessage);
 
-    expect(select.id).to.be.a('string');
-    expect(select.defaultMessage).to.equal('请选择情景');
+    expect(select.id).to.equal(output[1].id);
+    expect(select.defaultMessage).to.equal(output[1].defaultMessage);
 
-    expect(button.id).to.be.a('string');
-    expect(button.defaultMessage).to.equal('开始模拟');
-  });
-
-  it('should save to file', () => {
-    transformFileSync('fixture.js', options);
-
-    const output = readFileSync('./build/fixture.json', 'utf8');
-    JSON.parse(output).forEach((item, index) => {
-      expect(item.id).to.be.a('string');
-      expect(item.defaultMessage).to.equal(defaultMessages[index]);
-    });
+    expect(button.id).to.equal(output[2].id);
+    expect(button.defaultMessage).to.equal(output[2].defaultMessage);
   });
 });
