@@ -38,6 +38,8 @@ export default ({ types: t }) => ({
         const messages = Object.keys(messagesObject).map(key => ({
           id: getGUID(),
           defaultMessage: messagesObject[key],
+          file: filename,
+          key,
         }));
 
         mkdirpSync(dir);
