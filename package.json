@@ -1,11 +1,10 @@
 {
   "name": "babel-plugin-simple-react-intl",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
     "install": "rimraf lib/ && babel src/ --out-dir lib/",
-    "try": "rimraf build/ && babel-node try.js",
     "test": "mocha --compilers js:babel-register"
   },
   "repository": {
@@ -36,7 +35,6 @@
   },
   "dependencies": {
     "intl-messageformat-parser": "1.2.0",
-    "lz-string": "1.4.4",
     "mkdirp": "0.5.1"
   }
 }

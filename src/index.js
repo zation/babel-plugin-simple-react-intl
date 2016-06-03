@@ -1,7 +1,6 @@
 import p from 'path';
 import { writeFileSync } from 'fs';
 import { sync as mkdirpSync } from 'mkdirp';
-import { compress } from 'lz-string';
 
 const FUNCTION_NAME = [
   'defineMessages',
@@ -36,7 +35,6 @@ export default ({ types: t }) => ({
 
         const messagesObject = convertToObject(path.get('arguments')[0]);
         const messages = Object.keys(messagesObject).map(key => ({
-          id: compress(`${relativePath}-${key}`),
           defaultMessage: messagesObject[key],
           file: relativePath,
           key,
@@ -49,7 +47,11 @@ export default ({ types: t }) => ({
           property.node.value = t.objectExpression([
             t.objectProperty(
               t.identifier('id'),
-              t.stringLiteral(messages[index].id)
+              t.binaryExpression(
+                '+',
+                t.identifier('module.id'),
+                t.stringLiteral(`-${property.node.key.name}`)
+              )
             ),
             t.objectProperty(
               t.identifier('defaultMessage'),

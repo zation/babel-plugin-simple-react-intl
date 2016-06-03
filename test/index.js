@@ -19,16 +19,17 @@ describe('Simple react-intil', () => {
 
   it('should generate new structure and save to file', () => {
     const { code } = transformFileSync('fixture.js', options);
+    const module = { id: 1 };
     const transformedObject = eval(code.match(/\(\{((.|\n)*)\}\)/)[0]);
     const output = JSON.parse(readFileSync('test/build/fixture.json', 'utf8'));
 
     expect(output).to.have.length(3);
     output.forEach(
-      ({ id, defaultMessage, key, file }) => {
+      ({ defaultMessage, key, file }) => {
         const transformedItem = transformedObject[key];
-        expect(id).to.equal(transformedItem.id);
         expect(defaultMessage).to.equal(transformedItem.defaultMessage);
         expect(file).to.equal('fixture.js');
+        expect(transformedItem.id).to.equal(`1-${key}`);
       }
     );
   });
