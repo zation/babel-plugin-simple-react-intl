@@ -20,17 +20,15 @@ describe('Simple react-intil', () => {
   it('should generate new structure and save to file', () => {
     const { code } = transformFileSync('fixture.js', options);
     const module = { id: 1 };
-    const transformedObject = eval(code.match(/\(\{((.|\n)*)\}\)/)[0]);
-    const output = JSON.parse(readFileSync('test/build/fixture.json', 'utf8'));
+    const { checkbox, select, button } = eval(code.match(/\(\{((.|\n)*)\}\)/)[0]);
 
-    expect(output).to.have.length(3);
-    output.forEach(
-      ({ defaultMessage, key, file }) => {
-        const transformedItem = transformedObject[key];
-        expect(defaultMessage).to.equal(transformedItem.defaultMessage);
-        expect(file).to.equal('fixture.js');
-        expect(transformedItem.id).to.equal(`1-${key}`);
-      }
-    );
+    expect(checkbox.id).to.equal('1-checkbox');
+    expect(checkbox.defaultMessage).to.equal('情景模拟');
+
+    expect(select.id).to.equal('1-select');
+    expect(select.defaultMessage).to.equal('请选择情景');
+
+    expect(button.id).to.equal('1-button');
+    expect(button.defaultMessage).to.equal('开始模拟');
   });
 });
